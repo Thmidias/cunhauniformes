@@ -23,6 +23,7 @@
             width: 100%;
             object-fit: contain; /* Mantém a imagem inteira visível */
             background-color: #f9fafb; /* Adiciona um fundo cinza claro para as imagens */
+            cursor: pointer; /* Adiciona o cursor de ponteiro para indicar que é clicável */
         }
         /* Estilo para a barra de rolagem */
         ::-webkit-scrollbar { width: 8px; }
@@ -34,12 +35,12 @@
 <body class="bg-gray-100">
 
     <!-- Botão Flutuante do WhatsApp -->
-    <a href="https://wa.me/5521989196028" target="_blank" class="fixed bottom-5 right-5 bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg z-20 transform hover:scale-110 transition-transform">
+    <a href="https://wa.me/5521989196028" target="_blank" class="fixed bottom-5 right-5 bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg z-30 transform hover:scale-110 transition-transform">
         <i class="fab fa-whatsapp text-3xl"></i>
     </a>
 
     <!-- Cabeçalho -->
-    <header class="bg-white shadow-md sticky top-0 z-10">
+    <header class="bg-white shadow-md sticky top-0 z-20">
         <div class="container mx-auto px-6 py-4 flex justify-center items-center">
             <!-- Logo da Empresa -->
             <img src="https://i.postimg.cc/0QS1KLTQ/Design-sem-nome-42.png" alt="Logo Cunha Uniformes" class="h-28">
@@ -149,37 +150,58 @@
         </div>
     </footer>
 
+    <!-- Modal de Visualização de Imagem -->
+    <div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-80 z-50 flex justify-center items-center p-4 transition-opacity duration-300">
+        <button id="closeModal" class="absolute top-4 right-4 text-white text-5xl font-bold hover:text-gray-300">&times;</button>
+        <img id="modalImage" src="" alt="Imagem do Uniforme em Tela Cheia" class="max-w-full max-h-full object-contain">
+    </div>
+
     <script>
+        // Lógica do Modal de Imagem
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const closeModalBtn = document.getElementById('closeModal');
+        const productImages = document.querySelectorAll('.product-card img');
+
+        productImages.forEach(img => {
+            img.addEventListener('click', () => {
+                modal.classList.remove('hidden');
+                modalImage.src = img.src;
+                document.body.style.overflow = 'hidden'; // Impede a rolagem do fundo
+            });
+        });
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto'; // Restaura a rolagem do fundo
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+
+        modal.addEventListener('click', (e) => {
+            // Fecha o modal se o clique for no fundo (overlay)
+            if (e.target.id === 'imageModal') {
+                closeModal();
+            }
+        });
+
         // Função para filtrar os produtos com base na busca do usuário
         function filterProducts() {
-            // Pega o valor digitado na busca, em minúsculas
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            
-            // Pega todos os cards de produtos
             const products = document.querySelectorAll('.product-card');
-            
-            // Pega o container da mensagem "Nenhum resultado"
             const noResultsMessage = document.getElementById('no-results');
-            
             let productsFound = 0;
 
-            // Itera sobre cada card de produto
             products.forEach(product => {
-                // Pega o nome do produto dentro do card, em minúsculas
                 const productName = product.querySelector('.product-name').textContent.toLowerCase();
-                
-                // Verifica se o nome do produto inclui o termo buscado
                 if (productName.includes(searchTerm)) {
-                    // Se incluir, mostra o card
                     product.style.display = '';
                     productsFound++;
                 } else {
-                    // Se não incluir, esconde o card
                     product.style.display = 'none';
                 }
             });
-            
-            // Mostra ou esconde a mensagem de "nenhum resultado"
+
             if (productsFound > 0) {
                 noResultsMessage.classList.add('hidden');
             } else {
@@ -190,8 +212,3 @@
 
 </body>
 </html>
-
-
-</body>
-</ht
-
